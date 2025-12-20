@@ -1,43 +1,43 @@
-# New API Exporter
+# New API 数据导出工具
 
-> Export data from New API database to intermediate JSON format for EZ-API import.
+> 从 New API 数据库导出数据到中间 JSON 格式，用于 EZ-API 导入。
 
-## Overview
+## 概述
 
-This tool exports channels, tokens, and users from a New API database to a JSON format that can be imported into EZ-API. It handles:
+本工具从 New API 数据库导出 channels、tokens 和 users 数据到 JSON 格式，供 EZ-API 导入使用。主要功能：
 
-- **Channel → Provider** mapping with multi-key splitting
-- **User/Token → Master/Key** mapping with proper relationships
-- **Multi-group** channels (exports all groups as bindings)
-- **Type/Status** enum conversion
-- **Warning collection** for unmappable fields
+- **Channel → Provider** 映射，支持多 Key 拆分
+- **User/Token → Master/Key** 映射，自动推断关联关系
+- **多分组**渠道导出（所有分组作为 bindings 导出）
+- **类型/状态**枚举自动转换
+- **警告收集**，标记无法映射的字段
 
-## Installation
+## 安装
 
 ```bash
-# Clone the repository
+# 克隆仓库
 git clone https://github.com/EZ-Api/exporter.git
 cd exporter
 
-# Build
+# 编译
 go build -o exporter ./cmd/exporter
 
-# Or install globally
+# 或全局安装
 go install ./cmd/exporter
 ```
 
-## Usage
+## 使用方法
 
-### Export from MySQL
+### 从 MySQL 导出
 
 ```bash
-# Basic export
+# 基础导出
 exporter export \
   --source-type mysql \
   --source-dsn "user:pass@tcp(localhost:3306)/new_api" \
   -o export.json
 
-# With all options
+# 完整参数
 exporter export \
   --source-type mysql \
   --source-dsn "user:pass@tcp(localhost:3306)/new_api" \
@@ -47,22 +47,22 @@ exporter export \
   -o export.json
 ```
 
-### Export from SQLite
+### 从 SQLite 导出
 
 ```bash
-# First, copy the SQLite file from Docker container if needed
+# 如果是 Docker 部署，先复制 SQLite 文件
 docker cp newapi-container:/data/new_api.db ./new_api.db
 
-# Then export
+# 然后导出
 exporter export \
   --source-type sqlite \
   --source-path ./new_api.db \
   -o export.json
 ```
 
-### Dry Run
+### 空运行模式
 
-Validate the export without writing a file:
+验证导出但不写入文件：
 
 ```bash
 exporter export \
@@ -71,7 +71,7 @@ exporter export \
   --dry-run
 ```
 
-### Show Database Statistics
+### 查看数据库统计
 
 ```bash
 exporter stats \
@@ -79,40 +79,40 @@ exporter stats \
   --source-dsn "user:pass@tcp(localhost:3306)/new_api"
 ```
 
-### Validate Export File
+### 验证导出文件
 
 ```bash
 exporter validate export.json
 ```
 
-## Command Reference
+## 命令参考
 
 ### `exporter export`
 
-Export data from New API database.
+从 New API 数据库导出数据。
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--source-type` | `mysql` | Database type (`mysql` or `sqlite`) |
-| `--source-dsn` | - | MySQL DSN (required for MySQL) |
-| `--source-path` | - | SQLite file path (required for SQLite) |
-| `-o, --output` | `export.json` | Output file path |
-| `--include-tokens` | `true` | Include tokens in export |
-| `--include-abilities` | `false` | Include abilities (bindings) |
-| `--dry-run` | `false` | Validate without writing |
-| `--verbose` | `false` | Enable verbose output |
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `--source-type` | `mysql` | 数据库类型（`mysql` 或 `sqlite`） |
+| `--source-dsn` | - | MySQL DSN（MySQL 必填） |
+| `--source-path` | - | SQLite 文件路径（SQLite 必填） |
+| `-o, --output` | `export.json` | 输出文件路径 |
+| `--include-tokens` | `true` | 是否包含 tokens |
+| `--include-abilities` | `false` | 是否包含 abilities（bindings） |
+| `--dry-run` | `false` | 仅验证不写入 |
+| `--verbose` | `false` | 详细输出 |
 
 ### `exporter stats`
 
-Show database entity counts.
+显示数据库实体统计。
 
 ### `exporter validate [file]`
 
-Validate an export JSON file structure.
+验证导出 JSON 文件结构。
 
-## Output Format
+## 输出格式
 
-The export produces a JSON file with this structure:
+导出生成的 JSON 文件结构：
 
 ```json
 {
@@ -132,7 +132,7 @@ The export produces a JSON file with this structure:
 }
 ```
 
-### Provider (from Channel)
+### Provider（来自 Channel）
 
 ```json
 {
@@ -152,7 +152,7 @@ The export produces a JSON file with this structure:
 }
 ```
 
-### Master (from User)
+### Master（来自 User）
 
 ```json
 {
@@ -167,7 +167,7 @@ The export produces a JSON file with this structure:
 }
 ```
 
-### Key (from Token)
+### Key（来自 Token）
 
 ```json
 {
@@ -184,86 +184,86 @@ The export produces a JSON file with this structure:
 }
 ```
 
-## Multi-Key Handling
+## 多 Key 处理
 
-When a New API channel has multiple keys (newline separated), the exporter splits them into multiple providers:
+当 New API 的 channel 包含多个 key（换行分隔）时，导出工具会将它们拆分为多个 provider：
 
 ```
-Original Channel:
+原始 Channel：
   name: "openai-main"
   key: "sk-key1\nsk-key2\nsk-key3"
 
-Exported Providers:
+导出后的 Providers：
   1. name: "openai-main",   api_key: "sk-key1"
   2. name: "openai-main-2", api_key: "sk-key2"
   3. name: "openai-main-3", api_key: "sk-key3"
 ```
 
-## Multi-Group Handling
+## 多分组处理
 
-Channels with multiple groups (comma separated) use the first group as primary:
+包含多个分组（逗号分隔）的 channel，使用第一个分组作为主分组：
 
 ```
-Original Channel:
+原始 Channel：
   group: "default,vip,enterprise"
 
-Exported Provider:
+导出后的 Provider：
   primary_group: "default"
   all_groups: ["default", "vip", "enterprise"]
 ```
 
-A warning is generated suggesting to create Bindings for other groups.
+系统会生成警告，建议为其他分组创建 Bindings。
 
-## Warnings
+## 警告信息
 
-The exporter generates warnings for:
+导出工具会生成以下类型的警告：
 
-- Unknown channel types (mapped to "custom")
-- Multi-group channels (only first group used as primary)
-- Unsupported fields (priority, model_mapping, status_code_mapping, etc.)
+- 未知的渠道类型（映射为 "custom"）
+- 多分组渠道（仅使用第一个分组作为主分组）
+- 不支持的字段（priority、model_mapping、status_code_mapping 等）
 
-## Development
+## 开发
 
-### Prerequisites
+### 环境要求
 
 - Go 1.23+
-- Access to New API database (MySQL or SQLite)
+- New API 数据库访问权限（MySQL 或 SQLite）
 
-### Build
+### 编译
 
 ```bash
 go build -o exporter ./cmd/exporter
 ```
 
-### Test
+### 测试
 
 ```bash
 go test ./...
 ```
 
-### Project Structure
+### 项目结构
 
 ```
 exporter/
-├── cmd/exporter/main.go          # CLI entry point
+├── cmd/exporter/main.go          # CLI 入口
 ├── internal/
 │   ├── source/newapi/
-│   │   ├── models.go             # New API table structures
-│   │   ├── connector.go          # Database connection
-│   │   ├── exporter.go           # Export logic
-│   │   ├── channel_type.go       # Type enum mapping
-│   │   └── status.go             # Status enum mapping
+│   │   ├── models.go             # New API 表结构
+│   │   ├── connector.go          # 数据库连接
+│   │   ├── exporter.go           # 导出逻辑
+│   │   ├── channel_type.go       # 类型枚举映射
+│   │   └── status.go             # 状态枚举映射
 │   └── schema/
-│       └── intermediate.go       # Output JSON format
+│       └── intermediate.go       # 输出 JSON 格式定义
 ├── go.mod
 └── README.md
 ```
 
-## Related Documentation
+## 相关文档
 
-- [SPEC: New API → EZ-API Migration Tool](../devlog/spec/SPEC_newapi_migration_tool.md)
-- [EZ-API Documentation](../ez-api/README.md)
+- [SPEC: New API → EZ-API 迁移工具](../devlog/spec/SPEC_newapi_migration_tool.md)
+- [EZ-API 文档](../ez-api/README.md)
 
-## License
+## 许可证
 
 MIT
