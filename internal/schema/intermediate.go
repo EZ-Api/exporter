@@ -42,6 +42,7 @@ type Provider struct {
 	PrimaryGroup string   `json:"primary_group"`        // Primary group (first from multi-group)
 	AllGroups    []string `json:"all_groups,omitempty"` // All groups (for multi-group channels)
 	Weight       int      `json:"weight"`               // Load balancing weight
+	Priority     int      `json:"priority,omitempty"`   // Channel priority (optional, fallback for weight)
 	Status       string   `json:"status"`               // active/disabled
 	AutoBan      bool     `json:"auto_ban"`             // Auto ban on failure
 

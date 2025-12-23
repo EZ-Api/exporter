@@ -113,8 +113,14 @@ func (e *Exporter) channelToProviders(ch Channel) []schema.Provider {
 
 	// Weight
 	weight := 1
-	if ch.Weight != nil {
+	priority := 0
+	if ch.Weight != nil && *ch.Weight > 0 {
 		weight = int(*ch.Weight)
+	} else if ch.Priority != nil && *ch.Priority > 0 {
+		weight = int(*ch.Priority)
+	}
+	if ch.Priority != nil && *ch.Priority > 0 {
+		priority = int(*ch.Priority)
 	}
 
 	// Auto ban
@@ -150,6 +156,7 @@ func (e *Exporter) channelToProviders(ch Channel) []schema.Provider {
 			PrimaryGroup: primaryGroup,
 			AllGroups:    groups,
 			Weight:       weight,
+			Priority:     priority,
 			Status:       status,
 			AutoBan:      autoBan,
 			IsMultiKey:   isMultiKey,
