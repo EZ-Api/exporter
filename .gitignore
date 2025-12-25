@@ -8,6 +8,12 @@
 *.so
 *.dylib
 
+# Compiled binary (Linux/macOS without extension)
+/exporter
+
+# GoReleaser dist directory
+/dist/
+
 # Test binary, built with `go test -c`
 *.test
 

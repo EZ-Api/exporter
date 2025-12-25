@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/zenfun/exporter/internal/schema"
+	"github.com/EZ-Api/exporter/internal/schema"
 )
 
 // ExporterConfig holds configuration for the exporter.
