@@ -14,6 +14,22 @@
 
 ## 安装
 
+### 方式一：go install（推荐）
+
+```bash
+go install github.com/EZ-Api/exporter/cmd/exporter@latest
+```
+
+### 方式二：下载预编译二进制
+
+从 [GitHub Releases](https://github.com/EZ-Api/exporter/releases) 下载对应平台的可执行文件：
+
+- Linux (amd64, arm64)
+- macOS (amd64, arm64)
+- Windows (amd64)
+
+### 方式三：从源码编译
+
 ```bash
 # 克隆仓库
 git clone https://github.com/EZ-Api/exporter.git
@@ -21,9 +37,6 @@ cd exporter
 
 # 编译
 go build -o exporter ./cmd/exporter
-
-# 或全局安装
-go install ./cmd/exporter
 ```
 
 ## 使用方法
@@ -226,7 +239,7 @@ exporter validate export.json
 
 ### 环境要求
 
-- Go 1.23+
+- Go 1.24+
 - New API 数据库访问权限（MySQL 或 SQLite）
 
 ### 编译

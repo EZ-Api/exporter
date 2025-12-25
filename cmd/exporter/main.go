@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/EZ-Api/exporter/internal/source/newapi"
 	"github.com/spf13/cobra"
-	"github.com/zenfun/exporter/internal/source/newapi"
 	"gorm.io/gorm/logger"
 )
 
