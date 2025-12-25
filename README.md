@@ -20,6 +20,13 @@
 go install github.com/EZ-Api/exporter/cmd/exporter@latest
 ```
 
+**卸载：**
+```bash
+rm -f $(go env GOPATH)/bin/exporter
+# 或者如果设置了 GOBIN
+rm -f $(go env GOBIN)/exporter
+```
+
 ### 方式二：下载预编译二进制
 
 从 [GitHub Releases](https://github.com/EZ-Api/exporter/releases) 下载对应平台的可执行文件：
